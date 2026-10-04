@@ -24,3 +24,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "ExpenSync"
 include(":app")
+include(":core")
+include(":data")
+include(":domain")
+include(":features")
