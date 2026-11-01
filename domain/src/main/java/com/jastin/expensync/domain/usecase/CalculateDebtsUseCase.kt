@@ -4,8 +4,9 @@ import com.jastin.expensync.domain.model.Debt
 import com.jastin.expensync.domain.model.Expense
 import kotlin.math.min
 import kotlin.math.round
+import javax.inject.Inject
 
-class CalculateDebtsUseCase {
+class CalculateDebtsUseCase @Inject constructor() {
 
     operator fun invoke(expenses: List<Expense>): List<Debt> {
         val balances = mutableMapOf<String, Double>()

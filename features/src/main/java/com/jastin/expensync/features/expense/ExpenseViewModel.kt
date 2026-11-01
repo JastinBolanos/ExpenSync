@@ -3,9 +3,9 @@ package com.jastin.expensync.features.expense
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.jastin.expensync.domain.model.Expense
-import com.jastin.expensync.domain.repository.ExpenseRepository
 import com.jastin.expensync.domain.usecase.AddExpenseUseCase
 import com.jastin.expensync.domain.usecase.CalculateDebtsUseCase
+import com.jastin.expensync.domain.usecase.GetExpensesUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -17,7 +17,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ExpenseViewModel @Inject constructor(
-    private val repository: ExpenseRepository,
+    private val getExpensesUseCase: GetExpensesUseCase,
     private val addExpenseUseCase: AddExpenseUseCase,
     private val calculateDebtsUseCase: CalculateDebtsUseCase
 ) : ViewModel() {
@@ -31,7 +31,7 @@ class ExpenseViewModel @Inject constructor(
 
     private fun observeExpenses() {
         viewModelScope.launch {
-            repository.getExpenses().collect { expensesList ->
+            getExpensesUseCase().collect { expensesList ->
                 val calculatedDebts = calculateDebtsUseCase(expensesList)
 
                 _uiState.update { currentState ->
@@ -60,6 +60,7 @@ class ExpenseViewModel @Inject constructor(
                     participantsIds = participantsIds,
                     date = java.util.Date(System.currentTimeMillis())
                 )
+
                 addExpenseUseCase(newExpense)
                 _uiState.update { it.copy(errorMessage = null) }
 
