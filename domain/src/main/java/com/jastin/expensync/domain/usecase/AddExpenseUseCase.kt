@@ -2,8 +2,9 @@ package com.jastin.expensync.domain.usecase
 
 import com.jastin.expensync.domain.model.Expense
 import com.jastin.expensync.domain.repository.ExpenseRepository
+import javax.inject.Inject
 
-class AddExpenseUseCase(
+class AddExpenseUseCase @Inject constructor(
     private val repository: ExpenseRepository
 ) {
     suspend operator fun invoke(expense: Expense) {
