@@ -9,6 +9,7 @@ import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import io.github.jan.supabase.SupabaseClient
 import javax.inject.Singleton
 
 @Module
@@ -17,8 +18,8 @@ object DataModule {
 
     @Provides
     @Singleton
-    fun provideExpenseRepository(): ExpenseRepository {
-        return ExpenseRepositoryImpl()
+    fun provideExpenseRepository(supabaseClient: SupabaseClient): ExpenseRepository {
+        return ExpenseRepositoryImpl(supabaseClient)
     }
 
     @Provides
