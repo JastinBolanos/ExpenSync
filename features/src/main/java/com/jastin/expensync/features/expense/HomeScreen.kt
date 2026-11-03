@@ -5,9 +5,13 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -16,10 +20,22 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.jastin.expensync.domain.model.Debt
+import com.jastin.expensync.domain.model.Expense
+
+val DeepBackground = Color(0xFF050B14)
+val SurfaceDark = Color(0xFF111827).copy(alpha = 0.7f)
+val NeonCyan = Color(0xFF00F2FE)
+val NeonBlue = Color(0xFF4FACFE)
+val TextPrimary = Color(0xFFFFFFFF)
+val TextSecondary = Color(0xFF9CA3AF)
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -28,70 +44,88 @@ fun HomeScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     var showBottomSheet by remember { mutableStateOf(false) }
+    val backgroundBrush = Brush.verticalGradient(
+        colors = listOf(Color(0xFF0F172A), DeepBackground, DeepBackground)
+    )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("ExpenSync", fontWeight = FontWeight.Bold) },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
-            )
-        },
+        containerColor = Color.Transparent,
         floatingActionButton = {
-            ExtendedFloatingActionButton(
-                onClick = { showBottomSheet = true },
-                containerColor = MaterialTheme.colorScheme.tertiary,
-                contentColor = MaterialTheme.colorScheme.onTertiary
-            ) {
-                Icon(Icons.Default.Add, contentDescription = "Agregar")
-                Spacer(Modifier.width(8.dp))
-                Text("Nuevo Gasto")
-            }
+            PremiumFloatingActionButton(onClick = { showBottomSheet = true })
         }
     ) { paddingValues ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
+                .background(backgroundBrush)
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp)
         ) {
-            AnimatedVisibility(
-                visible = uiState.debts.isNotEmpty(),
-                enter = fadeIn() + expandVertically(),
-                exit = fadeOut() + shrinkVertically()
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = 20.dp)
             ) {
-                DebtSummaryCard(
-                    debts = uiState.debts,
-                    modifier = Modifier.padding(top = 16.dp)
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = "ExpenSync",
+                    color = TextPrimary,
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.sp
                 )
-            }
+                Text(
+                    text = "Gestión de gastos inteligente",
+                    color = TextSecondary,
+                    fontSize = 14.sp
+                )
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                this@Column.AnimatedVisibility(
-                    visible = uiState.expenses.isEmpty(),
-                    enter = fadeIn(),
-                    exit = fadeOut(),
-                    modifier = Modifier.align(Alignment.Center)
+                Spacer(modifier = Modifier.height(24.dp))
+
+                AnimatedVisibility(
+                    visible = uiState.debts.isNotEmpty(),
+                    enter = fadeIn() + expandVertically(),
+                    exit = fadeOut() + shrinkVertically()
                 ) {
-                    Text(
-                        text = "No hay gastos aún. ¡Añade el primero!",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    DebtSummaryCard(
+                        debts = uiState.debts,
+                        modifier = Modifier.padding(bottom = 16.dp)
                     )
                 }
 
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(top = 16.dp, bottom = 88.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
-                ) {
-                    items(
-                        items = uiState.expenses,
-                        key = { expense -> expense.id }
-                    ) { expense ->
-                        ExpenseCard(expense = expense)
+                Text(
+                    text = "TRANSACCIONES",
+                    color = TextSecondary,
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 2.sp,
+                    modifier = Modifier.padding(bottom = 16.dp, start = 4.dp, top = 8.dp)
+                )
+
+                Box(modifier = Modifier.fillMaxSize()) {
+                    this@Column.AnimatedVisibility(
+                        visible = uiState.expenses.isEmpty(),
+                        enter = fadeIn(),
+                        exit = fadeOut(),
+                        modifier = Modifier.align(Alignment.Center)
+                    ) {
+                        Text(
+                            text = "No hay gastos aún. ¡Añade el primero!",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = TextSecondary
+                        )
+                    }
+
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(bottom = 100.dp),
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        items(
+                            items = uiState.expenses,
+                            key = { expense -> expense.id }
+                        ) { expense ->
+                            PremiumExpenseCard(expense = expense)
+                        }
                     }
                 }
             }
@@ -120,21 +154,20 @@ private fun DebtSummaryCard(
     modifier: Modifier = Modifier
 ) {
     Card(
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.secondaryContainer
-        ),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = SurfaceDark),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)),
         modifier = modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            modifier = Modifier.padding(20.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             Text(
-                text = "Plan de Liquidación (Quién debe a quién)",
-                style = MaterialTheme.typography.titleSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSecondaryContainer
+                text = "Plan de Liquidación",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = TextSecondary
             )
 
             debts.forEach { debt ->
@@ -147,29 +180,97 @@ private fun DebtSummaryCard(
                         Text(
                             text = debt.debtorId,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                            color = TextPrimary,
+                            fontSize = 16.sp
                         )
                         Icon(
                             imageVector = Icons.Default.SwapHoriz,
                             contentDescription = "debe a",
                             modifier = Modifier
-                                .padding(horizontal = 6.dp)
-                                .size(16.dp),
-                            tint = MaterialTheme.colorScheme.onSecondaryContainer
+                                .padding(horizontal = 8.dp)
+                                .size(18.dp),
+                            tint = NeonCyan
                         )
                         Text(
                             text = debt.creditorId,
                             fontWeight = FontWeight.SemiBold,
-                            color = MaterialTheme.colorScheme.onSecondaryContainer
+                            color = TextPrimary,
+                            fontSize = 16.sp
                         )
                     }
                     Text(
                         text = String.format(java.util.Locale.US, "$%.2f", debt.amount),
                         fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
+                        color = NeonCyan,
+                        fontSize = 18.sp
                     )
                 }
             }
+        }
+    }
+}
+
+@Composable
+fun PremiumExpenseCard(expense: Expense) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = SurfaceDark),
+        shape = RoundedCornerShape(20.dp),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f))
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Column {
+                Text(
+                    text = expense.title,
+                    color = TextPrimary,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Pagado por ${expense.paidByUserId}",
+                    color = TextSecondary,
+                    fontSize = 13.sp
+                )
+            }
+            Text(
+                text = "- $${expense.amount}",
+                color = TextPrimary,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        }
+    }
+}
+
+@Composable
+fun PremiumFloatingActionButton(onClick: () -> Unit) {
+    val borderGradient = Brush.sweepGradient(
+        colors = listOf(NeonCyan, NeonBlue, NeonCyan)
+    )
+
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .size(64.dp)
+            .clip(CircleShape)
+            .background(Color(0xFF0B1120))
+            .border(width = 2.dp, brush = borderGradient, shape = CircleShape)
+            .padding(8.dp)
+    ) {
+        IconButton(onClick = onClick, modifier = Modifier.fillMaxSize()) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = "Nuevo Gasto",
+                tint = NeonCyan,
+                modifier = Modifier.size(28.dp)
+            )
         }
     }
 }

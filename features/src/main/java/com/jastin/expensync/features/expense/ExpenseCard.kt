@@ -3,6 +3,7 @@ package com.jastin.expensync.features.expense
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.spring
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -12,8 +13,10 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.jastin.expensync.domain.model.Expense
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -27,12 +30,10 @@ fun ExpenseCard(
     val dateFormatter = remember { SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()) }
     val formattedDate = remember(expense.date) { dateFormatter.format(expense.date) }
 
-    ElevatedCard(
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 4.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
+    Card(
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = SurfaceDark),
+        border = BorderStroke(1.dp, Color.White.copy(alpha = 0.05f)),
         modifier = modifier
             .fillMaxWidth()
             .clickable { expanded = !expanded }
@@ -53,43 +54,60 @@ fun ExpenseCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
+                Column {
+                    Text(
+                        text = expense.title,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        color = TextPrimary
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = formattedDate,
+                        fontSize = 13.sp,
+                        color = TextSecondary
+                    )
+                }
+
                 Text(
-                    text = expense.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    text = String.format(Locale.US, "- $%.2f", expense.amount),
+                    fontSize = 18.sp,
                     fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
-                Text(
-                    text = String.format(Locale.US, "$%.2f", expense.amount),
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.ExtraBold,
-                    color = MaterialTheme.colorScheme.primary
+                    color = TextPrimary
                 )
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            Text(
-                text = formattedDate,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-
             if (expanded) {
-                HorizontalDivider(modifier = Modifier.padding(vertical = 12.dp))
+                HorizontalDivider(
+                    modifier = Modifier.padding(vertical = 12.dp),
+                    color = Color.White.copy(alpha = 0.1f)
+                )
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(
-                        imageVector = Icons.Default.Person,
-                        contentDescription = "Participantes",
-                        tint = MaterialTheme.colorScheme.secondary,
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(
+                            imageVector = Icons.Default.Person,
+                            contentDescription = "Participantes",
+                            tint = NeonCyan,
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text(
+                            text = "Participantes: ${expense.participantsIds.size}",
+                            fontSize = 14.sp,
+                            color = TextSecondary
+                        )
+                    }
+
                     Text(
-                        text = "Participantes: ${expense.participantsIds.size}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.secondary
+                        text = "Pagado por ${expense.paidByUserId}",
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = NeonCyan
                     )
                 }
             }
