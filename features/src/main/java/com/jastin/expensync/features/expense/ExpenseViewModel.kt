@@ -72,6 +72,21 @@ class ExpenseViewModel @Inject constructor(
         }
     }
 
+    fun setSearchQuery(query: String) {
+        _uiState.update { it.copy(searchQuery = query) }
+    }
+
+    fun setFilter(filter: ExpenseFilter) {
+        _uiState.update { it.copy(selectedFilter = filter) }
+    }
+
+    fun setCategoryFilter(category: ExpenseCategory?) {
+        _uiState.update {
+            val next = if (it.selectedCategory == category) null else category
+            it.copy(selectedCategory = next)
+        }
+    }
+
     fun clearError() {
         _uiState.update { it.copy(errorMessage = null) }
     }
