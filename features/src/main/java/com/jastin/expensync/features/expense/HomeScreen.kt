@@ -350,7 +350,7 @@ fun HomeScreen(
                                 }
                             }
                         } else {
-                            // Standard Header (Logo, Name & Frameless Search Action)
+                            // Standard Header (Name & Frameless Search Action)
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -358,34 +358,18 @@ fun HomeScreen(
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(
-                                    verticalAlignment = Alignment.CenterVertically,
-                                    horizontalArrangement = Arrangement.spacedBy(10.dp)
-                                ) {
-                                    Image(
-                                        painter = painterResource(id = R.drawable.ic_app_logo),
-                                        contentDescription = "ExpenSync Logo",
-                                        contentScale = ContentScale.Fit,
-                                        modifier = Modifier
-                                            .size(42.dp)
-                                            .clip(RoundedCornerShape(10.dp))
-                                            .background(Color.White)
-                                            .border(0.8.dp, Color.White.copy(alpha = 0.25f), RoundedCornerShape(10.dp))
+                                Column {
+                                    Text(
+                                        text = "ExpenSync",
+                                        fontSize = 24.sp,
+                                        fontWeight = FontWeight.Bold,
+                                        color = TextPrimary
                                     )
-
-                                    Column {
-                                        Text(
-                                            text = "ExpenSync",
-                                            fontSize = 24.sp,
-                                            fontWeight = FontWeight.Bold,
-                                            color = TextPrimary
-                                        )
-                                        Text(
-                                            text = "Gestión de gastos inteligente",
-                                            fontSize = 12.sp,
-                                            color = TextSecondary
-                                        )
-                                    }
+                                    Text(
+                                        text = "Gestión de gastos inteligente",
+                                        fontSize = 12.sp,
+                                        color = TextSecondary
+                                    )
                                 }
 
                                 Row(
@@ -410,75 +394,13 @@ fun HomeScreen(
                     }
                 }
 
-                // Hero Total with animated counter & Logo Color Accents
-                item(key = "hero_total") {
-                    Column(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        Text(
-                            text = "TOTAL GASTADO",
-                            fontSize = 11.sp,
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.2.sp,
-                            color = LogoSlate
-                        )
-
-                        AnimatedAmountText(
-                            targetAmount = uiState.totalGroupSpent,
-                            prefix = "$",
-                            fontSize = 38.sp,
-                            fontWeight = FontWeight.Black,
-                            color = TextPrimary,
-                            durationMillis = 1300
-                        )
-
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            horizontalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            val isPositive = uiState.myNetBalance > 0.01
-                            val isNegative = uiState.myNetBalance < -0.01
-                            val targetColor = when {
-                                isPositive -> NeonEmerald
-                                isNegative -> LogoCopper
-                                else -> LogoGold
-                            }
-                            val statusColor by animateColorAsState(targetValue = targetColor, label = "hero_status_color")
-
-                            val labelPrefix = when {
-                                isPositive -> "Te deben +"
-                                isNegative -> "Debes -"
-                                else -> "Cuentas equilibradas"
-                            }
-
-                            Text(
-                                text = labelPrefix,
-                                fontSize = 13.sp,
-                                fontWeight = FontWeight.SemiBold,
-                                color = statusColor
-                            )
-
-                            if (isPositive || isNegative) {
-                                AnimatedAmountText(
-                                    targetAmount = kotlin.math.abs(uiState.myNetBalance),
-                                    prefix = "$",
-                                    fontSize = 13.sp,
-                                    fontWeight = FontWeight.Bold,
-                                    color = statusColor,
-                                    durationMillis = 1100
-                                )
-                            }
-
-                            Text(text = "•", color = LogoSlate, fontSize = 12.sp)
-
-                            Text(
-                                text = "${uiState.expenses.size} transacciones",
-                                fontSize = 13.sp,
-                                color = TextSecondary
-                            )
-                        }
-                    }
+                // Professional Luxury Bank Card Hero with subtle floating animation
+                item(key = "hero_luxury_card") {
+                    LuxuryBankCard(
+                        totalSpent = uiState.totalGroupSpent,
+                        myNetBalance = uiState.myNetBalance,
+                        transactionsCount = uiState.expenses.size
+                    )
                 }
 
                 // Settlement Section

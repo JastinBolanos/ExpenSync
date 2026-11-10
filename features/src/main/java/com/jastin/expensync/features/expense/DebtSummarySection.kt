@@ -48,40 +48,13 @@ fun DebtSummarySection(
             )
 
             val infiniteTransition = rememberInfiniteTransition(label = "debt_section_animations")
-            val boxShape = RoundedCornerShape(12.dp)
 
-            // Logo-Infused Pine Obsidian Container
-            Box(
+            // Settlement Transfer Items without surrounding card box
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clip(boxShape)
-                    .background(
-                        Brush.verticalGradient(
-                            colors = listOf(
-                                Color(0xFF092520), // Top Deep Pine Slate
-                                Color(0xFF061A17), // Mid Logo Pine Teal
-                                Color(0xFF030E0C)  // Base Midnight Shadow
-                            )
-                        )
-                    )
-                    .border(
-                        width = 1.dp,
-                        brush = Brush.verticalGradient(
-                            colors = listOf(
-                                LogoGold.copy(alpha = 0.35f),
-                                LogoCopper.copy(alpha = 0.20f),
-                                LogoSlate.copy(alpha = 0.12f)
-                            )
-                        ),
-                        shape = boxShape
-                    )
+                    .padding(vertical = 4.dp)
             ) {
-                // Settlement Transfer Items
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 6.dp)
-                ) {
                         val arrowTranslateX by infiniteTransition.animateFloat(
                             initialValue = -3f,
                             targetValue = 3f,
@@ -148,34 +121,16 @@ fun DebtSummarySection(
                                     )
                                 }
 
-                                // Logo-Themed Amount Pill Badge
-                                Box(
-                                    contentAlignment = Alignment.Center,
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(Color(0xFF0A221E))
-                                        .border(
-                                            width = 1.dp,
-                                            brush = Brush.verticalGradient(
-                                                listOf(
-                                                    LogoGold.copy(alpha = 0.30f),
-                                                    LogoCopper.copy(alpha = 0.15f)
-                                                )
-                                            ),
-                                            shape = RoundedCornerShape(8.dp)
-                                        )
-                                        .padding(horizontal = 10.dp, vertical = 5.dp)
-                                ) {
-                                    AnimatedAmountText(
-                                        targetAmount = debt.amount,
-                                        prefix = "$",
-                                        fontSize = 14.sp,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        color = LogoGold,
-                                        delayMillis = index * 120,
-                                        durationMillis = 1100
-                                    )
-                                }
+                                // Frameless Amount without box
+                                AnimatedAmountText(
+                                    targetAmount = debt.amount,
+                                    prefix = "$",
+                                    fontSize = 15.sp,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    color = LogoGold,
+                                    delayMillis = index * 120,
+                                    durationMillis = 1100
+                                )
                             }
 
                             // Living animated dividing line between transfers
@@ -192,4 +147,3 @@ fun DebtSummarySection(
             }
         }
     }
-}

@@ -38,6 +38,8 @@ fun ExpenseRow(
 ) {
     var expanded by remember { mutableStateOf(false) }
     val category = remember(expense.title) { ExpenseCategory.detect(expense.title) }
+    val conceptIcon = remember(expense.title) { ExpenseConcepts.getIconForTitle(expense.title) }
+    val conceptColor = remember(expense.title) { ExpenseConcepts.getColorForTitle(expense.title) }
 
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
@@ -118,8 +120,13 @@ fun ExpenseRow(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
                     modifier = Modifier.weight(1f, fill = false)
                 ) {
-                    // Pulsing Glowing Circular Icon
-                    GlowingCategoryIcon(category = category, size = 36.dp)
+                    // Pulsing Glowing Circular Icon with matching concept vector
+                    GlowingCategoryIcon(
+                        category = category,
+                        icon = conceptIcon,
+                        accentColor = conceptColor,
+                        size = 36.dp
+                    )
 
                     Column(verticalArrangement = Arrangement.spacedBy(2.dp)) {
                         Text(
@@ -166,7 +173,7 @@ fun ExpenseRow(
                         )
 
                         Text(
-                            text = String.format(Locale.US, "$%.2f c/u", splitPerPerson),
+                            text = String.format(Locale.US, "$%.2f", splitPerPerson),
                             fontSize = 11.sp,
                             fontWeight = FontWeight.Medium,
                             color = LogoSlate

@@ -9,8 +9,11 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -22,9 +25,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
@@ -39,22 +46,13 @@ fun AddExpenseSheet(
     onConfirm: (title: String, amount: Double, paidBy: String, participants: List<String>) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    var title by remember { mutableStateOf("") }
+    val quickConcepts = remember { ExpenseConcepts.ALL }
+    var title by remember { mutableStateOf(quickConcepts.first().name) }
     var amountText by remember { mutableStateOf("") }
+    val amountFocusRequester = remember { FocusRequester() }
     val users = remember { listOf("Yo", "Ana", "Carlos", "Luis") }
     var paidBy by remember { mutableStateOf(users.first()) }
     var selectedParticipants by remember { mutableStateOf(users.toSet()) }
-
-    val quickConcepts = remember {
-        listOf(
-            Triple("Cena", LogoGold, "🍽️"),
-            Triple("Supermercado", Color(0xFF10B981), "🛒"),
-            Triple("Uber", LogoSlate, "🚗"),
-            Triple("Café", LogoGold, "☕"),
-            Triple("Bar", LogoCopper, "🍸"),
-            Triple("Gasolina", LogoCopper, "⛽")
-        )
-    }
 
     val currentAmount = amountText.toDoubleOrNull() ?: 0.0
     val splitCount = selectedParticipants.size
@@ -121,80 +119,91 @@ fun AddExpenseSheet(
                 }
             }
 
-            // Minimal Large Amount Input with Logo Living Underline
+            // Centered Large Amount Input with precise Living Underline
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 4.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(2.dp)
+                verticalArrangement = Arrangement.spacedBy(6.dp)
             ) {
                 Text(
                     text = "MONTO DEL GASTO",
-                    fontSize = 10.sp,
+                    fontSize = 11.sp,
                     fontWeight = FontWeight.Bold,
-                    letterSpacing = 1.3.sp,
+                    letterSpacing = 1.4.sp,
                     color = LogoSlate
                 )
 
-                OutlinedTextField(
-                    value = amountText,
-                    onValueChange = { input ->
-                        if (input.isEmpty() || input.matches(Regex("""^\d*(\.\d{0,2})?$"""))) {
-                            amountText = input
-                        }
-                    },
-                    placeholder = {
-                        Text(
-                            text = "$0.00",
+                // Perfectly Centered Amount Entry
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) {
+                            amountFocusRequester.requestFocus()
+                        },
+                    horizontalArrangement = Arrangement.Center,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "$",
+                        fontSize = 38.sp,
+                        fontWeight = FontWeight.Black,
+                        color = if (amountText.isNotEmpty()) LogoGold else LogoSlate.copy(alpha = 0.40f)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    BasicTextField(
+                        value = amountText,
+                        onValueChange = { input ->
+                            if (input.isEmpty() || input.matches(Regex("""^\d*(\.\d{0,2})?$"""))) {
+                                amountText = input
+                            }
+                        },
+                        singleLine = true,
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                        cursorBrush = SolidColor(LogoGold),
+                        textStyle = TextStyle(
                             fontSize = 42.sp,
                             fontWeight = FontWeight.Black,
-                            color = LogoSlate.copy(alpha = 0.35f),
-                            modifier = Modifier.fillMaxWidth(),
-                            textAlign = TextAlign.Center
-                        )
-                    },
-                    leadingIcon = if (amountText.isNotEmpty()) {
-                        {
-                            Text(
-                                text = "$",
-                                fontSize = 34.sp,
-                                fontWeight = FontWeight.Black,
-                                color = LogoGold
-                            )
+                            color = TextPrimary,
+                            textAlign = TextAlign.Start
+                        ),
+                        modifier = Modifier
+                            .focusRequester(amountFocusRequester)
+                            .width(IntrinsicSize.Min)
+                            .defaultMinSize(minWidth = if (amountText.isEmpty()) 96.dp else 24.dp),
+                        decorationBox = { innerTextField ->
+                            Box(contentAlignment = Alignment.CenterStart) {
+                                if (amountText.isEmpty()) {
+                                    Text(
+                                        text = "0.00",
+                                        fontSize = 42.sp,
+                                        fontWeight = FontWeight.Black,
+                                        color = LogoSlate.copy(alpha = 0.35f)
+                                    )
+                                }
+                                innerTextField()
+                            }
                         }
-                    } else null,
-                    singleLine = true,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        cursorColor = LogoGold,
-                        focusedBorderColor = Color.Transparent,
-                        unfocusedBorderColor = Color.Transparent,
-                        focusedContainerColor = Color.Transparent,
-                        unfocusedContainerColor = Color.Transparent
-                    ),
-                    textStyle = LocalTextStyle.current.copy(
-                        fontSize = 42.sp,
-                        fontWeight = FontWeight.Black,
-                        color = TextPrimary,
-                        textAlign = TextAlign.Center
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
+                    )
+                }
 
-                // Living animated light beam under amount
+                // Living animated light beam placed directly below the centered amount
                 AnimatedLivingLine(
                     colorA = LogoGold,
                     colorB = LogoCopper,
-                    height = 1.2.dp,
-                    durationMillis = 2600,
+                    height = 1.4.dp,
+                    durationMillis = 2400,
                     modifier = Modifier
-                        .fillMaxWidth(0.55f)
-                        .padding(top = 2.dp)
+                        .width(180.dp)
+                        .padding(top = 4.dp)
                 )
             }
 
-            // Concept Field + Animated Quick Concept Chips
+            // Concept Field + Bandeja Lateral de Conceptos
             Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
                 Text(
                     text = "¿En qué consistió?",
@@ -203,78 +212,52 @@ fun AddExpenseSheet(
                     color = TextSecondary
                 )
 
-                OutlinedTextField(
-                    value = title,
-                    onValueChange = { title = it },
-                    placeholder = { Text("Ej. Cena, Supermercado...", color = LogoSlate) },
-                    singleLine = true,
-                    shape = RoundedCornerShape(12.dp),
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = TextPrimary,
-                        unfocusedTextColor = TextPrimary,
-                        cursorColor = LogoGold,
-                        focusedBorderColor = LogoGold.copy(alpha = 0.6f),
-                        unfocusedBorderColor = LogoSlate.copy(alpha = 0.25f),
-                        focusedContainerColor = Color(0xFF09221E),
-                        unfocusedContainerColor = Color(0xFF09221E)
-                    ),
-                    modifier = Modifier.fillMaxWidth()
-                )
 
-                // Quick suggestions with category accents
-                FlowRow(
-                    horizontalArrangement = Arrangement.spacedBy(6.dp),
-                    verticalArrangement = Arrangement.spacedBy(6.dp)
+                // Bandeja lateral horizontal sin cajas ni emojis, con logo de cada tipo
+                LazyRow(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 6.dp)
                 ) {
-                    quickConcepts.forEach { (concept, accentColor, emoji) ->
-                        val isSelected = title == concept
-                        val chipBg by animateColorAsState(
-                            targetValue = if (isSelected) accentColor.copy(alpha = 0.18f) else Color(0xFF09221E),
-                            label = "concept_bg"
-                        )
-                        val chipBorderColor by animateColorAsState(
-                            targetValue = if (isSelected) accentColor.copy(alpha = 0.60f) else LogoSlate.copy(alpha = 0.20f),
-                            label = "concept_border"
-                        )
-                        val chipTextColor by animateColorAsState(
-                            targetValue = if (isSelected) accentColor else TextSecondary,
-                            label = "concept_text"
-                        )
-                        val chipScale by animateFloatAsState(
-                            targetValue = if (isSelected) 1.04f else 1f,
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                            label = "concept_scale"
-                        )
-
-                        val chipShape = RoundedCornerShape(10.dp)
-                        Box(
-                            contentAlignment = Alignment.Center,
+                    items(quickConcepts) { conceptItem ->
+                        val isSelected = title == conceptItem.name
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
-                                .graphicsLayer {
-                                    scaleX = chipScale
-                                    scaleY = chipScale
-                                }
-                                .clip(chipShape)
-                                .background(chipBg)
-                                .border(width = 0.8.dp, color = chipBorderColor, shape = chipShape)
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
-                                    indication = ripple(bounded = true, color = accentColor.copy(alpha = 0.25f))
+                                    indication = ripple(bounded = false, radius = 28.dp, color = LogoGold)
                                 ) {
-                                    title = concept
+                                    title = conceptItem.name
                                 }
-                                .padding(horizontal = 10.dp, vertical = 6.dp)
+                                .padding(vertical = 4.dp, horizontal = 2.dp)
                         ) {
                             Row(
                                 verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(4.dp)
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
                             ) {
-                                Text(text = emoji, fontSize = 12.sp)
+                                Icon(
+                                    imageVector = conceptItem.icon,
+                                    contentDescription = null,
+                                    tint = if (isSelected) LogoGold else LogoSlate,
+                                    modifier = Modifier.size(15.dp)
+                                )
                                 Text(
-                                    text = concept,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Normal,
-                                    color = chipTextColor
+                                    text = conceptItem.name,
+                                    fontSize = 13.sp,
+                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                    color = if (isSelected) LogoGold else LogoSlate,
+                                    letterSpacing = 0.2.sp
+                                )
+                            }
+                            if (isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(top = 4.dp)
+                                        .width(24.dp)
+                                        .height(2.dp)
+                                        .clip(CircleShape)
+                                        .background(LogoGold)
                                 )
                             }
                         }
@@ -293,61 +276,44 @@ fun AddExpenseSheet(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     users.forEach { user ->
                         val isSelected = paidBy == user
-                        val pillBg by animateColorAsState(
-                            targetValue = if (isSelected) LogoGold.copy(alpha = 0.16f) else Color(0xFF09221E),
-                            label = "payer_bg"
-                        )
-                        val pillBorderColor by animateColorAsState(
-                            targetValue = if (isSelected) LogoGold.copy(alpha = 0.60f) else LogoSlate.copy(alpha = 0.20f),
-                            label = "payer_border"
-                        )
-                        val pillTextColor by animateColorAsState(
-                            targetValue = if (isSelected) LogoGold else TextPrimary,
+                        val textColor by animateColorAsState(
+                            targetValue = if (isSelected) LogoGold else LogoSlate,
                             label = "payer_text"
                         )
-                        val pillScale by animateFloatAsState(
-                            targetValue = if (isSelected) 1.03f else 1f,
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                            label = "payer_scale"
-                        )
-
-                        val pillShape = RoundedCornerShape(12.dp)
-                        Box(
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
                                 .weight(1f)
-                                .graphicsLayer {
-                                    scaleX = pillScale
-                                    scaleY = pillScale
-                                }
-                                .clip(pillShape)
-                                .background(pillBg)
-                                .border(width = 0.8.dp, color = pillBorderColor, shape = pillShape)
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
-                                    indication = ripple(bounded = true, color = LogoGold.copy(alpha = 0.25f))
+                                    indication = ripple(bounded = false, radius = 28.dp, color = LogoGold)
                                 ) {
                                     paidBy = user
                                 }
-                                .padding(vertical = 8.dp, horizontal = 4.dp)
+                                .padding(vertical = 8.dp)
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                GlowingUserAvatar(name = user, size = 20.dp)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = user,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
-                                    color = pillTextColor,
-                                    maxLines = 1
+                            Text(
+                                text = user,
+                                fontSize = 14.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = textColor,
+                                maxLines = 1
+                            )
+                            if (isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(top = 4.dp)
+                                        .width(20.dp)
+                                        .height(2.dp)
+                                        .clip(CircleShape)
+                                        .background(LogoGold)
                                 )
+                            } else {
+                                Spacer(modifier = Modifier.height(6.dp))
                             }
                         }
                     }
@@ -395,42 +361,21 @@ fun AddExpenseSheet(
 
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
                     users.forEach { user ->
                         val isSelected = selectedParticipants.contains(user)
-                        val partBg by animateColorAsState(
-                            targetValue = if (isSelected) LogoCopper.copy(alpha = 0.16f) else Color(0xFF09221E),
-                            label = "part_bg"
-                        )
-                        val partBorderColor by animateColorAsState(
-                            targetValue = if (isSelected) LogoCopper.copy(alpha = 0.60f) else LogoSlate.copy(alpha = 0.20f),
-                            label = "part_border"
-                        )
-                        val partColor by animateColorAsState(
-                            targetValue = if (isSelected) LogoCopper else TextMuted,
+                        val textColor by animateColorAsState(
+                            targetValue = if (isSelected) LogoCopper else LogoSlate.copy(alpha = 0.45f),
                             label = "part_text"
                         )
-                        val partScale by animateFloatAsState(
-                            targetValue = if (isSelected) 1.03f else 1f,
-                            animationSpec = spring(dampingRatio = Spring.DampingRatioMediumBouncy),
-                            label = "part_scale"
-                        )
-
-                        val partShape = RoundedCornerShape(12.dp)
-                        Box(
+                        Column(
+                            horizontalAlignment = Alignment.CenterHorizontally,
                             modifier = Modifier
                                 .weight(1f)
-                                .graphicsLayer {
-                                    scaleX = partScale
-                                    scaleY = partScale
-                                }
-                                .clip(partShape)
-                                .background(partBg)
-                                .border(width = 0.8.dp, color = partBorderColor, shape = partShape)
                                 .clickable(
                                     interactionSource = remember { MutableInteractionSource() },
-                                    indication = ripple(bounded = true, color = LogoCopper.copy(alpha = 0.25f))
+                                    indication = ripple(bounded = false, radius = 28.dp, color = LogoCopper)
                                 ) {
                                     selectedParticipants = if (isSelected) {
                                         if (selectedParticipants.size > 1) selectedParticipants - user else selectedParticipants
@@ -438,22 +383,26 @@ fun AddExpenseSheet(
                                         selectedParticipants + user
                                     }
                                 }
-                                .padding(vertical = 8.dp, horizontal = 4.dp)
+                                .padding(vertical = 8.dp)
                         ) {
-                            Row(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.Center,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                GlowingUserAvatar(name = user, size = 20.dp)
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text(
-                                    text = user,
-                                    fontSize = 12.sp,
-                                    fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
-                                    color = partColor,
-                                    maxLines = 1
+                            Text(
+                                text = user,
+                                fontSize = 14.sp,
+                                fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Medium,
+                                color = textColor,
+                                maxLines = 1
+                            )
+                            if (isSelected) {
+                                Box(
+                                    modifier = Modifier
+                                        .padding(top = 4.dp)
+                                        .width(20.dp)
+                                        .height(2.dp)
+                                        .clip(CircleShape)
+                                        .background(LogoCopper)
                                 )
+                            } else {
+                                Spacer(modifier = Modifier.height(6.dp))
                             }
                         }
                     }
@@ -498,7 +447,6 @@ fun AddExpenseSheet(
                             AnimatedAmountText(
                                 targetAmount = splitAmount,
                                 prefix = "$",
-                                suffix = " c/u",
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = LogoGold

@@ -19,6 +19,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.TextUnit
@@ -37,6 +38,8 @@ fun AnimatedAmountText(
     suffix: String = "",
     fontSize: TextUnit = 16.sp,
     fontWeight: FontWeight = FontWeight.Bold,
+    fontFamily: androidx.compose.ui.text.font.FontFamily? = null,
+    letterSpacing: TextUnit = TextUnit.Unspecified,
     color: Color = LogoGold,
     durationMillis: Int = 1100,
     delayMillis: Int = 0
@@ -63,6 +66,8 @@ fun AnimatedAmountText(
         text = String.format(Locale.US, "%s%.2f%s", prefix, animatedValue, suffix),
         fontSize = fontSize,
         fontWeight = fontWeight,
+        fontFamily = fontFamily,
+        letterSpacing = letterSpacing,
         color = color,
         modifier = modifier
     )
@@ -73,7 +78,7 @@ fun AnimatedAmountText(
  */
 @Composable
 fun AnimatedLivingLine(
-    modifier: Modifier = Modifier,
+    modifier: Modifier = Modifier.fillMaxWidth(),
     colorA: Color = LogoGold,
     colorB: Color = LogoCopper,
     height: Dp = 1.2.dp,
@@ -92,7 +97,6 @@ fun AnimatedLivingLine(
 
     Box(
         modifier = modifier
-            .fillMaxWidth()
             .height(height)
             .drawWithCache {
                 val width = size.width
@@ -139,8 +143,12 @@ fun AnimatedLivingLine(
 fun GlowingCategoryIcon(
     category: ExpenseCategory,
     size: Dp = 38.dp,
+    icon: ImageVector? = null,
+    accentColor: Color? = null,
     modifier: Modifier = Modifier
 ) {
+    val displayIcon = icon ?: category.icon
+    val displayColor = accentColor ?: category.accentColor
     val infiniteTransition = rememberInfiniteTransition(label = "icon_glow")
 
     // Pulsing aura radius
@@ -182,8 +190,8 @@ fun GlowingCategoryIcon(
                 .background(
                     Brush.radialGradient(
                         colors = listOf(
-                            category.accentColor.copy(alpha = 0.85f),
-                            category.accentColor.copy(alpha = 0.3f),
+                            displayColor.copy(alpha = 0.85f),
+                            displayColor.copy(alpha = 0.3f),
                             Color.Transparent
                         )
                     )
@@ -201,20 +209,20 @@ fun GlowingCategoryIcon(
                     width = 1.4.dp,
                     brush = Brush.sweepGradient(
                         colors = listOf(
-                            category.accentColor.copy(alpha = 0.4f),
-                            category.accentColor,
+                            displayColor.copy(alpha = 0.4f),
+                            displayColor,
                             LogoWhite.copy(alpha = 0.9f),
-                            category.accentColor,
-                            category.accentColor.copy(alpha = 0.4f)
+                            displayColor,
+                            displayColor.copy(alpha = 0.4f)
                         )
                     ),
                     shape = CircleShape
                 )
         ) {
             Icon(
-                imageVector = category.icon,
+                imageVector = displayIcon,
                 contentDescription = category.label,
-                tint = category.accentColor,
+                tint = displayColor,
                 modifier = Modifier.size(size * 0.52f)
             )
         }
