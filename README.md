@@ -19,22 +19,6 @@
 
 ---
 
-## Tabla de Contenidos
-
-- [Descripción General](#-descripción-general)
-- [Características Principales](#-características-principales)
-- [Diseño y Experiencia de Usuario (UI/UX)](#-diseño-y-experiencia-de-usuario-uiux)
-- [Algoritmo de Liquidación de Deudas](#-algoritmo-de-liquidación-de-deudas)
-- [Arquitectura del Proyecto](#-arquitectura-del-proyecto)
-- [Estructura Multi-Módulo](#-estructura-multi-módulo)
-- [Stack Tecnológico](#-stack-tecnológico)
-- [Persistencia y Capa de Datos](#-persistencia-y-capa-de-datos)
-- [Instalación y Configuración](#-instalación-y-configuración)
-- [Seguridad](#-seguridad)
-- [Licencia](#-licencia)
-
----
-
 ## Descripción General
 
 **ExpenSync** es una aplicación móvil nativa para Android diseñada para resolver de forma definitiva los dolores de cabeza de las cuentas compartidas en viajes, pisos de estudiantes, salidas grupales y proyectos en equipo.
