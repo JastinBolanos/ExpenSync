@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="180" height="180" alt="ic_launcher" src="https://github.com/user-attachments/assets/36923856-b26a-462d-8f41-0da6abc55a85" />
+  <img width="180" height="180" alt="ic_launcher" src=".github/assets/ic_launcher_readme.png" />
 </p>
 
 <h1 align="center">ExpenSync</h1>
@@ -19,7 +19,7 @@
 
 ---
 
-## 📌 Tabla de Contenidos
+## Tabla de Contenidos
 
 - [Descripción General](#-descripción-general)
 - [Características Principales](#-características-principales)
@@ -35,7 +35,7 @@
 
 ---
 
-## 📖 Descripción General
+## Descripción General
 
 **ExpenSync** es una aplicación móvil nativa para Android diseñada para resolver de forma definitiva los dolores de cabeza de las cuentas compartidas en viajes, pisos de estudiantes, salidas grupales y proyectos en equipo.
 
@@ -43,7 +43,7 @@ Permite registrar gastos en segundos, calcular automáticamente la cuota corresp
 
 ---
 
-## ✨ Características Principales
+## Características Principales
 
 - 💳 **Tarjeta Bancaria de Lujo Flotante (`LuxuryBankCard`)**: Indicador principal de gastos con estética metálica *Black Titanium*, chip EMV grabado en oro, pagos sin contacto NFC, emblema de red de lujo y animación de levitación suave.
 - 🧮 **Cálculo y Simplificación Voraz de Deudas**: Algoritmo optimizado que equilibra saldos y reduce drásticamente las transferencias necesarias entre participantes.
@@ -56,7 +56,7 @@ Permite registrar gastos en segundos, calcular automáticamente la cuota corresp
 
 ---
 
-## 🎨 Diseño y Experiencia de Usuario (UI/UX)
+## Diseño y Experiencia de Usuario (UI/UX)
 
 La aplicación sigue estrictamente los principios de **Material Design 3 (M3)** combinados con un lenguaje visual distintivo:
 
@@ -70,7 +70,7 @@ La aplicación sigue estrictamente los principios de **Material Design 3 (M3)** 
 
 ---
 
-## 🧮 Algoritmo de Liquidación de Deudas
+## Algoritmo de Liquidación de Deudas
 
 El cálculo de saldos y la simplificación de deudas se implementa en `domain/usecase/CalculateDebtsUseCase.kt`:
 
@@ -88,7 +88,7 @@ El cálculo de saldos y la simplificación de deudas se implementa en `domain/us
 
 ---
 
-## 🏛️ Arquitectura del Proyecto
+## Arquitectura del Proyecto
 
 ExpenSync está construido bajo **Clean Architecture** y principios de diseño modular:
 
@@ -117,7 +117,7 @@ ExpenSync está construido bajo **Clean Architecture** y principios de diseño m
 
 ---
 
-## 📦 Estructura Multi-Módulo
+## Estructura Multi-Módulo
 
 El repositorio está dividido en 5 módulos desacoplados:
 
@@ -140,7 +140,7 @@ El repositorio está dividido en 5 módulos desacoplados:
 
 ---
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 | Componente | Tecnología | Versión |
 | :--- | :--- | :--- |
@@ -157,7 +157,7 @@ El repositorio está dividido en 5 módulos desacoplados:
 
 ---
 
-## 💾 Persistencia y Capa de Datos
+## Persistencia y Capa de Datos
 
 ExpenSync utiliza un patrón **Offline-First**:
 1. Al abrir la app, `ExpenseRepositoryImpl.getExpenses()` emite inmediatamente los datos locales desde SQLite vía Room DAO.
@@ -167,7 +167,7 @@ ExpenSync utiliza un patrón **Offline-First**:
 
 ---
 
-## 🚀 Instalación y Configuración
+## Instalación y Configuración
 
 ### Prerrequisitos
 - **Android Studio**: Ladybug (2024.2.1) o superior.
@@ -188,15 +188,3 @@ gradle testDebugUnitTest
 ```
 
 ---
-
-## 🔒 Seguridad
-
-La seguridad de las transacciones, la privacidad de los saldos y la protección de datos es fundamental. Consulta los detalles de nuestras políticas, cifrado y reporte de vulnerabilidades en [SECURITY.md](SECURITY.md).
-
----
-
-## 📄 Licencia
-
-Este proyecto se encuentra bajo los términos de la licencia MIT. Consulta el archivo `LICENSE` para más detalles.
-
-Desarrollado con dedicación por **Jastin Bolaños**.

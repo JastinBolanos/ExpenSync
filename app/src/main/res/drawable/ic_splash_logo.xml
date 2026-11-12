@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="1080"
+    android:viewportHeight="1080">
+
+    <!-- Fondo negro sólido 1:1 -->
+    <path
+        android:fillColor="#000000"
+        android:pathData="M 0 0 L 1080 0 L 1080 1080 L 0 1080 Z" />
+
+    <group
+        android:scaleX="0.50"
+        android:scaleY="0.50"
+        android:translateX="67.25"
+        android:translateY="279.75">
+
+        <!-- Pieza 1: Asta vertical superior de la "d" con remate de cuarto de círculo -->
+        <path android:pathData="M 1033 43 A 175 175 0 0 0 858 218 L 858 648 L 1033 648 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="858"
+                    android:startY="300"
+                    android:endX="1033"
+                    android:endY="300">
+                    <item android:offset="0.0" android:color="#FFA5F391" />
+                    <item android:offset="0.5" android:color="#FFC0F987" />
+                    <item android:offset="1.0" android:color="#FFD6FF7F" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Pieza 2: Anillo inferior izquierdo de la "d" (con corte diagonal a 45°) -->
+        <path android:pathData="M 421.91 414.91 A 350 350 0 0 0 683 998 A 350 350 0 0 0 945.50 879.50 L 858 648 A 175 175 0 0 1 683 823 A 175 175 0 0 1 546.05 539.05 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="333"
+                    android:startY="650"
+                    android:endX="945"
+                    android:endY="820">
+                    <item android:offset="0.0" android:color="#FF5AE0A8" />
+                    <item android:offset="0.45" android:color="#FF7AE89E" />
+                    <item android:offset="0.8" android:color="#FFA8F490" />
+                    <item android:offset="1.0" android:color="#FFC8FA84" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Pieza 3: Cinta continua central en "S" (conecta el arco de la "d" con la base de la "e") -->
+        <path android:pathData="M 456.32 381.32 A 350 350 0 0 1 1033 648 A 175 175 0 0 0 1322.42 780.42 L 1446.32 904.32 A 350 350 0 0 1 858 648 A 175 175 0 0 0 580.88 505.88 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="456"
+                    android:startY="450"
+                    android:endX="1446"
+                    android:endY="850">
+                    <item android:offset="0.0" android:color="#FF5AE0A8" />
+                    <item android:offset="0.35" android:color="#FF7CE99D" />
+                    <item android:offset="0.68" android:color="#FFA6F391" />
+                    <item android:offset="1.0" android:color="#FFD6FF7F" />
+                </gradient>
+            </aapt:attr>
+        </path>
+
+        <!-- Pieza 4: Cúpula derecha y barra horizontal de la "e" -->
+        <path android:pathData="M 1077 323.44 A 350 350 0 0 1 1558 648 A 350 350 0 0 1 1548.97 727 L 1077 727 L 1077 570 L 1364.65 570 A 175 175 0 0 0 1077 531.97 Z">
+            <aapt:attr name="android:fillColor">
+                <gradient
+                    android:type="linear"
+                    android:startX="1077"
+                    android:startY="525"
+                    android:endX="1558"
+                    android:endY="525">
+                    <item android:offset="0.0" android:color="#FF5AE0A8" />
+                    <item android:offset="0.45" android:color="#FF8EEF97" />
+                    <item android:offset="0.8" android:color="#FFC0F987" />
+                    <item android:offset="1.0" android:color="#FFD6FF7F" />
+                </gradient>
+            </aapt:attr>
+        </path>
+    </group>
+
+</vector>
