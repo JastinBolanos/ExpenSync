@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="180" height="180" alt="ic_launcher" src=".github/assets/ic_launcher_readme.png" />
+  <img width="160" height="160" alt="ic_launcher" src=".github/assets/ic_launcher_readme.png" />
 </p>
 
 <h1 align="center">ExpenSync</h1>
